@@ -17,14 +17,14 @@ class ProductList extends React.Component {
         products: [],
     };
 
-    componentDidMount(){
+    componentDidMount() {
         this.setState({ products: Seed.products })
     }
 
     handleProductUpVote = (productId) => {
         const nextProducts = this.state.products.map((product) => { // NB: map() returns a new array, so no array is modified
             if (product.id === productId) {
-                return Object.assign({}, product, {  // Object.assign() is used a lot to avaoid mutating objects
+                return Object.assign({}, product, {  // Object.assign() is used a lot to avoid mutating objects
                     votes: product.votes + 1,
                 });
             } else {
@@ -32,7 +32,22 @@ class ProductList extends React.Component {
             }
         });
         this.setState({
-            products: nextProducts, 
+            products: nextProducts,
+        });
+    }
+
+    handleProductDownVote = (productId) => {
+        const nextProducts = this.state.products.map((product) => {
+            if (product.id === productId) {
+                return Object.assign({}, product, {
+                    votes: product.votes - 1,
+                });
+            } else {
+                return product;
+            }
+        });
+        this.setState({
+            products: nextProducts
         });
     }
 
@@ -44,7 +59,7 @@ class ProductList extends React.Component {
         ));
 
         const productComponents = products.map((product) => (
-            <Product 
+            <Product
                 key={'product-' + product.id}
                 id={product.id}
                 title={product.title}
@@ -53,7 +68,8 @@ class ProductList extends React.Component {
                 votes={product.votes}
                 submitterAvatarUrl={product.submitterAvatarUrl}
                 productImageUrl={product.productImageUrl}
-                onVote={this.handleProductUpVote}
+                upVote={this.handleProductUpVote}
+                downVote={this.handleProductDownVote}
             />
         ));
         return (
@@ -76,7 +92,11 @@ class Product extends React.Component {
     // }
 
     handleUpVote = () => {
-        this.props.onVote(this.props.id);
+        this.props.upVote(this.props.id);
+    }
+
+    handleDownVote = () => {
+        this.props.downVote(this.props.id);
     }
 
     render() {
@@ -94,8 +114,13 @@ class Product extends React.Component {
                         <a onClick={this.handleUpVote}>
                             <i className='large caret up icon' />
                         </a>
+                        <a onClick={this.handleDownVote}>
+                            <i className='large caret down icon' />
+                        </a>
                         {this.props.votes}
+
                     </div> {/* end of DIV */}
+
 
                     <div className='description'>
                         <a href={this.props.url}>{this.props.title}</a>
@@ -119,4 +144,4 @@ class Product extends React.Component {
 ReactDOM.render(
     <ProductList />,
     document.getElementById('content')
-  );
+);
